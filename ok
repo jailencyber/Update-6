@@ -1,0 +1,196 @@
+-- Initialize Player & Character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+-- UI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = player.PlayerGui
+ScreenGui.IgnoreGuiInset = true
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0.2, 0, 0.8, 0) -- Increased height
+MainFrame.Position = UDim2.new(0.01, 0, 0.01, 0)
+MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+MainFrame.Parent = ScreenGui
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Text = "Blox Fruits Farm & Spawn"
+TitleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.TextScaled = true
+TitleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+TitleLabel.Parent = MainFrame
+
+local SpawnButton = Instance.new("TextButton")
+SpawnButton.Text = "Spawn Fruit (In Front)"
+SpawnButton.TextColor3 = Color3.new(1, 1, 1)
+SpawnButton.TextScaled = true
+SpawnButton.Size = UDim2.new(1, 0, 0.1, 0)
+SpawnButton.Position = UDim2.new(0, 0, 0.65, 0)
+SpawnButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+SpawnButton.Parent = MainFrame
+
+local TeleportButton = Instance.new("TextButton")
+TeleportButton.Text = "Teleport to Spawn"
+TeleportButton.TextColor3 = Color3.new(1, 1, 1)
+TeleportButton.TextScaled = true
+TeleportButton.Size = UDim2.new(1, 0, 0.1, 0)
+TeleportButton.Position = UDim2.new(0, 0, 0.76, 0) -- Positioned below SpawnButton
+TeleportButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+TeleportButton.Parent = MainFrame
+
+local ServerHopButton = Instance.new("TextButton")
+ServerHopButton.Text = "Simulate Server Hop"
+ServerHopButton.TextColor3 = Color3.new(1, 1, 1)
+ServerHopButton.TextScaled = true
+ServerHopButton.Size = UDim2.new(1, 0, 0.1, 0)
+ServerHopButton.Position = UDim2.new(0, 0, 0.87, 0) -- Positioned below TeleportButton
+ServerHopButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+ServerHopButton.Parent = MainFrame
+
+local FruitDropdownFrame = Instance.new("Frame")
+FruitDropdownFrame.Size = UDim2.new(1, 0, 0.2, 0) -- Reduced height
+FruitDropdownFrame.Position = UDim2.new(0, 0, 0.1, 0)
+FruitDropdownFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownFrame.Parent = MainFrame
+
+-- Dropdown Label
+local FruitDropdownLabel = Instance.new("TextLabel")
+FruitDropdownLabel.Text = "Select Fruit:"
+FruitDropdownLabel.TextColor3 = Color3.new(1, 1, 1)
+FruitDropdownLabel.TextScaled = true
+FruitDropdownLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Positioned at the top
+FruitDropdownLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownLabel.Parent = FruitDropdownFrame
+
+-- Dropdown Button (Modified)
+local DropdownButton = Instance.new("TextButton")
+DropdownButton.Text = "Dragon Fruit" -- Default fruit
+DropdownButton.TextColor3 = Color3.new(1, 1, 1)
+DropdownButton.TextScaled = true
+DropdownButton.Size = UDim2.new(1, 0, 0.2, 0)
+DropdownButton.Position = UDim2.new(0, 0, 0.3, 0) -- Positioned below label
+DropdownButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+DropdownButton.Parent = FruitDropdownFrame
+
+-- Dropdown Frame (Modified)
+local DropdownFrame = Instance.new("Frame")
+DropdownFrame.Size = UDim2.new(1, 0, 0, 0) -- Initially hidden
+DropdownFrame.Position = UDim2.new(0, 0, 0.5, 0) -- Positioned below button
+DropdownFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+DropdownFrame.Parent = FruitDropdownFrame
+
+-- Create a list of available fruits (Expanded)
+local fruits = {"Dragon Fruit", "Magma Fruit", "Shadow Fruit", "Light Fruit", "Gravity Fruit", "Ice Fruit", "Flame Fruit", "Buddha Fruit", "String Fruit", "Quake Fruit", "Dark Fruit", "Rubber Fruit"}
+local selectedFruit = "Dragon Fruit" -- Default selection
+
+-- Create dropdown items
+for i, fruit in ipairs(fruits) do
+    local DropdownItem = Instance.new("TextButton")
+    DropdownItem.Text = fruit
+    DropdownItem.TextColor3 = Color3.new(1, 1, 1)
+    DropdownItem.TextScaled = true
+    DropdownItem.Size = UDim2.new(1, 0, 0.1, 0)
+    DropdownItem.Position = UDim2.new(0, 0, (i / #fruits) * 0.9, 0)
+    DropdownItem.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    DropdownItem.Parent = DropdownFrame
+
+    -- Set the currently selected fruit when an item is clicked
+    DropdownItem.MouseButton1Click:Connect(function()
+        DropdownButton.Text = fruit
+        selectedFruit = fruit
+        DropdownFrame.Size = UDim2.new(1, 0, 0, 0) -- Hide dropdown
+    end)
+end
+
+-- Function to show/hide the dropdown
+DropdownButton.MouseButton1Click:Connect(function()
+    if DropdownFrame.Size.Y.Scale == 0 then
+        DropdownFrame.Size = UDim2.new(1, 0, 0.9, 0) -- Show dropdown
+    else
+        DropdownFrame.Size = UDim2.new(1, 0, 0, 0) -- Hide dropdown
+    end
+end)
+
+-- Fruit Spawning Logic (Modified)
+-- local spawnLocations = {game.Workspace.Spawn1, game.Workspace.Spawn2, game.Workspace.Spawn3} -- Removed spawn locations
+-- local fruitLocation = game.Workspace:WaitForChild("FruitSpawnLocation") -- Removed, replaced by random spawn
+
+-- Function to spawn the fruit in front of the player
+function spawnFruit()
+    local fruitPrefabToSpawn = nil
+        if selectedFruit == "Dragon Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("DragonFruitPrefab")
+        elseif selectedFruit == "Magma Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("MagmaFruitPrefab")
+        elseif selectedFruit == "Shadow Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("ShadowFruitPrefab")
+        elseif selectedFruit == "Light Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("LightFruitPrefab")
+        elseif selectedFruit == "Gravity Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("GravityFruitPrefab")
+        elseif selectedFruit == "Ice Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("IceFruitPrefab")
+        elseif selectedFruit == "Flame Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("FlameFruitPrefab")
+        elseif selectedFruit == "Buddha Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("BuddhaFruitPrefab")
+        elseif selectedFruit == "String Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("StringFruitPrefab")
+        elseif selectedFruit == "Quake Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("QuakeFruitPrefab")
+        elseif selectedFruit == "Dark Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("DarkFruitPrefab")
+        elseif selectedFruit == "Rubber Fruit" then
+            fruitPrefabToSpawn = game.ReplicatedStorage:WaitForChild("RubberFruitPrefab")
+        else
+            print("Fruit not found.")
+            return
+        end
+
+    if fruitPrefabToSpawn then
+        local fruit = fruitPrefabToSpawn:Clone()
+        -- Calculate the spawn position in front of the player
+        local spawnDistance = 5  -- Distance in studs
+        local spawnPosition = rootPart.CFrame * CFrame.new(0, 0, -spawnDistance) -- In front of the player
+
+        fruit.CFrame = spawnPosition -- Set the fruit's CFrame (position and orientation)
+        fruit.Parent = game.Workspace
+        print(selectedFruit .. " spawned in front of you.")
+
+        -- Despawn after a delay
+        task.delay(60, function() -- Despawn after 60 seconds
+            if fruit and fruit.Parent then  -- Check if the fruit still exists
+                fruit:Destroy()
+                print(selectedFruit .. " despawned.")
+            end
+        end)
+    end
+end
+
+-- Connect the Spawn Button click event
+SpawnButton.MouseButton1Click:Connect(function()
+    if rootPart then
+        spawnFruit()
+    else
+        print("RootPart not found. Please wait for character to load.")
+    end
+end)
+
+-- Teleport to Spawn Location Button
+TeleportButton.MouseButton1Click:Connect(function()
+    -- Teleport to a random spawn point
+    -- No longer needed as we are not using a list of spawn points
+    print("Teleport button is not available anymore.")
+end)
+
+-- Simulate Server Hop Button
+ServerHopButton.MouseButton1Click:Connect(function()
+    print("Simulating Server Hop... (This does not actually change servers.)")
+    -- You could add code here to reload the player, etc.  This is very limited.
+    player:LoadCharacter() -- Simulate a server hop
+end)
