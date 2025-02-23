@@ -1,0 +1,395 @@
+—Initialize Player & Character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild(““umanoid””
+local rootPart = character:WaitForChild(““umanoidRootPart””
+
+——I Setup
+local ScreenGui = Instance.new(“S“reenGui”)”ScreenGui.Parent = player.PlayerGui
+ScreenGui.IgnoreGuiInset = true
+
+local MainFrame = Instance.new(“F“ame”)”MainFrame.Size = UDim2.new(0.2, 0, 0.6, 0) — —creased height
+MainFrame.Position = UDim2.new(0.01, 0, 0.01, 0)
+MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+MainFrame.Parent = ScreenGui
+
+local TitleLabel = Instance.new(“Te“tLabel”)
+”itleLabel.Text = “Bl“x Fruits Farm & Spawn”
+T”tleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.TextScaled = true
+TitleLabel.Size = UDim2.new(1, 0, 0.1, 0) — A—usted size
+TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+TitleLabel.Parent = MainFrame
+
+local SpawnButton = Instance.new(“Tex“Button”)
+S”awnButton.Text = “Spa“n Fruit”
+Sp”wnButton.TextColor3 = Color3.new(1, 1, 1)
+SpawnButton.TextScaled = true
+SpawnButton.Size = UDim2.new(1, 0, 0.15, 0) — Ad—sted size
+SpawnButton.Position = UDim2.new(0, 0, 0.65, 0) — Pos—ioned below dropdown
+SpawnButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+SpawnButton.Parent = MainFrame
+
+local AutoFarmToggle = Instance.new(“TextB“tton”)
+Aut”FarmToggle.Text = “Auto “arm: OFF”
+Auto”armToggle.TextColor3 = Color3.new(1, 1, 1)
+AutoFarmToggle.TextScaled = true
+AutoFarmToggle.Size = UDim2.new(1, 0, 0.15, 0)
+AutoFarmToggle.Position = UDim2.new(0, 0, 0.85, 0)
+AutoFarmToggle.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+AutoFarmToggle.Parent = MainFrame
+
+— Frui—Selection Dropdown (Modified)
+local FruitDropdownFrame = Instance.new(“Frame”“
+Frui”DropdownFrame.Size = UDim2.new(1, 0, 0.45, 0)  — Adjus—d size
+FruitDropdownFrame.Position = UDim2.new(0, 0, 0.1, 0) — Positi—ed below title
+FruitDropdownFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownFrame.Parent = MainFrame
+
+local FruitDropdownLabel = Instance.new(“TextLabe“”)
+FruitD”opdownLabel.Text = “Select F“uit:”
+FruitDr”pdownLabel.TextColor3 = Color3.new(1, 1, 1)
+FruitDropdownLabel.TextScaled = true
+FruitDropdownLabel.Size = UDim2.new(1, 0, 0.2, 0)
+FruitDropdownLabel.Position = UDim2.new(0, 0, 0, 0)
+FruitDropdownLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownLabel.Parent = FruitDropdownFrame
+
+local SelectedFruit = Instance.new(“TextLabe“”)
+Select”dFruit.Text = “Spin” — “efau”t—ruit
+SelectedFruit.TextColor3 = Color3.new(1, 1, 1)
+SelectedFruit.TextScaled = true
+SelectedFruit.Size = UDim2.new(1, 0, 0.2, 0)
+SelectedFruit.Position = UDim2.new(0, 0, 0.25, 0)
+SelectedFruit.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+SelectedFruit.Parent = FruitDropdownFrame
+
+local FruitListFrame = Instance.new(“Scrolling“rame”)
+FruitLi”tFrame.Size = UDim2.new(1, 0, 0.75, 0)
+FruitListFrame.Position = UDim2.new(0, 0, 0.25, 0)
+FruitListFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitListFrame.BorderSizePixel = 0
+FruitListFrame.CanvasSize = UDim2.new(0, 0, 0, #fruits * 30)
+FruitListFrame.Visible = false — Initiall—hidden
+FruitListFrame.Parent = FruitDropdownFrame
+
+— Fruit Def—itions
+local fruits = {
+    { name = “Spin”, rari“y = ”Common” },
+“   { n”me = “Spring”, ra“ity = ”Common” },
+“   { n”me = “Bomb”, rari“y = ”Common” },
+“   { n”me = “Smoke”, rar“ty = ”Common” },
+“   { n”me = “Flame”, rar“ty = ”Common” },
+“   { n”me = “Ice”, rarit“ = ”Uncommon” }“
+    { n”me = “Sand”, rari“y = ”Uncommon” }“
+    { n”me = “Dark”, rari“y = ”Uncommon” }“
+    { n”me = “Light”, rar“ty = ”Uncommon” }“
+    { n”me = “Magma”, rar“ty = ”Rare” },
+  “ { n”me = “Rubber”, ra“ity = ”Rare” },
+  “ { n”me = “String”, ra“ity = ”Rare” },
+  “ { n”me = “Quake”, rar“ty = ”Rare” },
+  “ { n”me = “Gravity”, r“rity = ”Rare” },
+  “ { n”me = “Buddha”, ra“ity = ”Legendary” “,
+    { n”me = “Phoenix”, r“rity = ”Legendary” “,
+    { n”me = “Control”, r“rity = ”Legendary” “,
+    { n”me = “Shadow”, ra“ity = ”Legendary” “,
+    { n”me = “Venom”, rar“ty = ”Mythic” },
+“   { n”me = “Spirit”, ra“ity = ”Mythic” },
+“   { n”me = “Dough”, rar“ty = ”Mythic” },
+“   { n”me = “Dragon”, ra“ity = ”Mythic” }
+}“
+— Pop”late F—it List in Dropdown
+for i, fruit in ipairs(fruits) do
+    local FruitButton = Instance.new(“TextButton”)“    FruitB”tton.Text = fruit.name
+    FruitButton.TextColor3 = Color3.new(1, 1, 1)
+    FruitButton.TextScaled = true
+    FruitButton.Size = UDim2.new(1, 0, 0, 30)
+    FruitButton.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
+    FruitButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    FruitButton.Parent = FruitListFrame
+
+    FruitButton.MouseButton1Click:Connect(function()
+        SelectedFruit.Text = fruit.name
+        FruitListFrame.Visible = false — Hide the li— after selection
+    end)
+end
+
+— Dropdown Tog—e
+SelectedFruit.MouseButton1Click:Connect(function()
+    FruitListFrame.Visible = not FruitListFrame.Visible
+end)
+
+— Fruit Spawnin—Function (Modified)
+local function spawnFruit(fruitName)
+    — Send a RemoteE—nt to the server to spawn the fruit.
+    local spawnEvent = game:GetService(“ReplicatedStorag“”):FindFirstChild”“SpawnFruitEvent”“
+    if spawnEv”nt then
+        spawnEvent:FireServer(fruitName, rootPart.Position)
+        print(“Spawning fruit: “ .. fruitName)
+ “  else
+        warn(“SpawnFruitEvent “ot found! The script will not spawn fruits.”)
+    end
+end
+
+—”Auto-Farm Logic—ocal autoFarmEnabled = false
+
+local function autoFarm()
+    while autoFarmEnabled do
+        — Spawn a fruit
+  —    spawnFruit(SelectedFruit.Text)
+
+        — Wait a short time—efore spawning another fruit
+        task.wait(5)
+
+        — Attempt to collect—ny nearby fruits
+        local collectEvent = game:GetService(“ReplicatedStorage”):“indFirstChild(“Co”lectFruitEvent”)
+“       if collect”vent then
+            collectEvent:FireServer()
+            print(“Collecting nearby fr“its.”)
+        else
+     ”      warn(“CollectFruitEvent no“ found! The script will not collect fruits.”)
+        end
+    en”
+end
+
+— Button Actions
+Spaw—utton.MouseButton1Click:Connect(function()
+    spawnFruit(SelectedFruit.Text)
+end)
+
+AutoFarmToggle.MouseButton1Click:Connect(function()
+    autoFarmEnabled = not autoFarmEnabled
+    if autoFarmEnabled then
+        AutoFarmToggle.Text = “Auto Farm: ON”
+      “ task.spawn(a”toFarm)
+    else
+        AutoFarmToggle.Text = “Auto Farm: OFF”
+    e“d
+end)
+
+— Make”the MainFrame d—ggable on mobile
+local dragging = false
+local dragInput, dragStart, startPos
+
+— Detect touch start
+Ma—Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+    end
+end)
+
+— Detect touch move
+Main—ame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+— Detect touch end
+MainFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)—Initialize Player & Character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild(““umanoid””
+local rootPart = character:WaitForChild(““umanoidRootPart””
+
+——I Setup
+local ScreenGui = Instance.new(“S“reenGui”)”ScreenGui.Parent = player.PlayerGui
+ScreenGui.IgnoreGuiInset = true
+
+local MainFrame = Instance.new(“F“ame”)”MainFrame.Size = UDim2.new(0.2, 0, 0.6, 0) — —creased height
+MainFrame.Position = UDim2.new(0.01, 0, 0.01, 0)
+MainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.new(0.3, 0.3, 0.3)
+MainFrame.Parent = ScreenGui
+
+local TitleLabel = Instance.new(“Te“tLabel”)
+”itleLabel.Text = “Bl“x Fruits Farm & Spawn”
+T”tleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.TextScaled = true
+TitleLabel.Size = UDim2.new(1, 0, 0.1, 0) — A—usted size
+TitleLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+TitleLabel.Parent = MainFrame
+
+local SpawnButton = Instance.new(“Tex“Button”)
+S”awnButton.Text = “Spa“n Fruit”
+Sp”wnButton.TextColor3 = Color3.new(1, 1, 1)
+SpawnButton.TextScaled = true
+SpawnButton.Size = UDim2.new(1, 0, 0.15, 0) — Ad—sted size
+SpawnButton.Position = UDim2.new(0, 0, 0.65, 0) — Pos—ioned below dropdown
+SpawnButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+SpawnButton.Parent = MainFrame
+
+local AutoFarmToggle = Instance.new(“TextB“tton”)
+Aut”FarmToggle.Text = “Auto “arm: OFF”
+Auto”armToggle.TextColor3 = Color3.new(1, 1, 1)
+AutoFarmToggle.TextScaled = true
+AutoFarmToggle.Size = UDim2.new(1, 0, 0.15, 0)
+AutoFarmToggle.Position = UDim2.new(0, 0, 0.85, 0)
+AutoFarmToggle.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+AutoFarmToggle.Parent = MainFrame
+
+— Frui—Selection Dropdown (Modified)
+local FruitDropdownFrame = Instance.new(“Frame”“
+Frui”DropdownFrame.Size = UDim2.new(1, 0, 0.45, 0)  — Adjus—d size
+FruitDropdownFrame.Position = UDim2.new(0, 0, 0.1, 0) — Positi—ed below title
+FruitDropdownFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownFrame.Parent = MainFrame
+
+local FruitDropdownLabel = Instance.new(“TextLabe“”)
+FruitD”opdownLabel.Text = “Select F“uit:”
+FruitDr”pdownLabel.TextColor3 = Color3.new(1, 1, 1)
+FruitDropdownLabel.TextScaled = true
+FruitDropdownLabel.Size = UDim2.new(1, 0, 0.2, 0)
+FruitDropdownLabel.Position = UDim2.new(0, 0, 0, 0)
+FruitDropdownLabel.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitDropdownLabel.Parent = FruitDropdownFrame
+
+local SelectedFruit = Instance.new(“TextLabe“”)
+Select”dFruit.Text = “Spin” — “efau”t—ruit
+SelectedFruit.TextColor3 = Color3.new(1, 1, 1)
+SelectedFruit.TextScaled = true
+SelectedFruit.Size = UDim2.new(1, 0, 0.2, 0)
+SelectedFruit.Position = UDim2.new(0, 0, 0.25, 0)
+SelectedFruit.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+SelectedFruit.Parent = FruitDropdownFrame
+
+local FruitListFrame = Instance.new(“Scrolling“rame”)
+FruitLi”tFrame.Size = UDim2.new(1, 0, 0.75, 0)
+FruitListFrame.Position = UDim2.new(0, 0, 0.25, 0)
+FruitListFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+FruitListFrame.BorderSizePixel = 0
+FruitListFrame.CanvasSize = UDim2.new(0, 0, 0, #fruits * 30)
+FruitListFrame.Visible = false — Initiall—hidden
+FruitListFrame.Parent = FruitDropdownFrame
+
+— Fruit Def—itions
+local fruits = {
+    { name = “Spin”, rari“y = ”Common” },
+“   { n”me = “Spring”, ra“ity = ”Common” },
+“   { n”me = “Bomb”, rari“y = ”Common” },
+“   { n”me = “Smoke”, rar“ty = ”Common” },
+“   { n”me = “Flame”, rar“ty = ”Common” },
+“   { n”me = “Ice”, rarit“ = ”Uncommon” }“
+    { n”me = “Sand”, rari“y = ”Uncommon” }“
+    { n”me = “Dark”, rari“y = ”Uncommon” }“
+    { n”me = “Light”, rar“ty = ”Uncommon” }“
+    { n”me = “Magma”, rar“ty = ”Rare” },
+  “ { n”me = “Rubber”, ra“ity = ”Rare” },
+  “ { n”me = “String”, ra“ity = ”Rare” },
+  “ { n”me = “Quake”, rar“ty = ”Rare” },
+  “ { n”me = “Gravity”, r“rity = ”Rare” },
+  “ { n”me = “Buddha”, ra“ity = ”Legendary” “,
+    { n”me = “Phoenix”, r“rity = ”Legendary” “,
+    { n”me = “Control”, r“rity = ”Legendary” “,
+    { n”me = “Shadow”, ra“ity = ”Legendary” “,
+    { n”me = “Venom”, rar“ty = ”Mythic” },
+“   { n”me = “Spirit”, ra“ity = ”Mythic” },
+“   { n”me = “Dough”, rar“ty = ”Mythic” },
+“   { n”me = “Dragon”, ra“ity = ”Mythic” }
+}“
+— Pop”late F—it List in Dropdown
+for i, fruit in ipairs(fruits) do
+    local FruitButton = Instance.new(“TextButton”)“    FruitB”tton.Text = fruit.name
+    FruitButton.TextColor3 = Color3.new(1, 1, 1)
+    FruitButton.TextScaled = true
+    FruitButton.Size = UDim2.new(1, 0, 0, 30)
+    FruitButton.Position = UDim2.new(0, 0, 0, (i - 1) * 30)
+    FruitButton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    FruitButton.Parent = FruitListFrame
+
+    FruitButton.MouseButton1Click:Connect(function()
+        SelectedFruit.Text = fruit.name
+        FruitListFrame.Visible = false — Hide the li— after selection
+    end)
+end
+
+— Dropdown Tog—e
+SelectedFruit.MouseButton1Click:Connect(function()
+    FruitListFrame.Visible = not FruitListFrame.Visible
+end)
+
+— Fruit Spawnin—Function (Modified)
+local function spawnFruit(fruitName)
+    — Send a RemoteE—nt to the server to spawn the fruit.
+    local spawnEvent = game:GetService(“ReplicatedStorag“”):FindFirstChild”“SpawnFruitEvent”“
+    if spawnEv”nt then
+        spawnEvent:FireServer(fruitName, rootPart.Position)
+        print(“Spawning fruit: “ .. fruitName)
+ “  else
+        warn(“SpawnFruitEvent “ot found! The script will not spawn fruits.”)
+    end
+end
+
+—”Auto-Farm Logic—ocal autoFarmEnabled = false
+
+local function autoFarm()
+    while autoFarmEnabled do
+        — Spawn a fruit
+  —    spawnFruit(SelectedFruit.Text)
+
+        — Wait a short time—efore spawning another fruit
+        task.wait(5)
+
+        — Attempt to collect—ny nearby fruits
+        local collectEvent = game:GetService(“ReplicatedStorage”):“indFirstChild(“Co”lectFruitEvent”)
+“       if collect”vent then
+            collectEvent:FireServer()
+            print(“Collecting nearby fr“its.”)
+        else
+     ”      warn(“CollectFruitEvent no“ found! The script will not collect fruits.”)
+        end
+    en”
+end
+
+— Button Actions
+Spaw—utton.MouseButton1Click:Connect(function()
+    spawnFruit(SelectedFruit.Text)
+end)
+
+AutoFarmToggle.MouseButton1Click:Connect(function()
+    autoFarmEnabled = not autoFarmEnabled
+    if autoFarmEnabled then
+        AutoFarmToggle.Text = “Auto Farm: ON”
+      “ task.spawn(a”toFarm)
+    else
+        AutoFarmToggle.Text = “Auto Farm: OFF”
+    e“d
+end)
+
+— Make”the MainFrame d—ggable on mobile
+local dragging = false
+local dragInput, dragStart, startPos
+
+— Detect touch start
+Ma—Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+    end
+end)
+
+— Detect touch move
+Main—ame.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.Touch then
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+— Detect touch end
+MainFrame.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
