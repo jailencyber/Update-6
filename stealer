@@ -1,0 +1,161 @@
+local FruitStealer = {}
+
+function FruitStealer:init()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hum = character:WaitForChild("Humanoid")
+    local gui = Instance.new("ScreenGui")
+    gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    local function tweenToPosition(targetPos)
+        local tweenService = game:GetService("TweenService")
+        local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Linear)
+        local goal = {CFrame = CFrame.new(targetPos)}
+        local tween = tweenService:Create(character.HumanoidRootPart, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait()
+    end
+
+    local function isInStealingArea()
+        local areaX = 100
+        local areaZ = 100
+        local charPos = character.HumanoidRootPart.Position
+        return math.abs(charPos.X - areaX) < 10 and math.abs(charPos.Z - areaZ) < 10
+    end
+
+    local function stealFruit(targetPlayer)
+        if not targetPlayer then
+            print("No player selected.")
+            return
+        end
+
+        if not (isInStealingArea() and not hum:GetState() == Enum.HumanoidStateType.Freefall and not targetPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Freefall) then
+            notifyUser("Failed to steal fruit: Player is in combat or not in the area.")
+            return
+        end
+
+        local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+        tweenToPosition(targetPos)
+
+        print("Successfully stolen fruit from " .. targetPlayer.Name)
+        notifyUser("Successfully stolen fruit from " .. targetPlayer.Name)
+    end
+
+    local function notifyUser(text)
+        local notif = Instance.new("TextLabel")
+        notif.Size = UDim2.new(0, 200, 0, 50)
+        notif.Position = UDim2.new(0.5, -100, 0, 0)
+        notif.BackgroundColor3 = Color3.new(0, 0, 0)
+        notif.TextColor3 = Color3.new(1, 1, 1)
+        notif.Text = text
+        notif.Parent = gui
+
+        delay(3, function()
+            notif:Destroy()
+        end)
+    end
+
+    local function autoFarm()
+        while true do
+            local npcs = workspace:GetChildren()
+            local closestNPC = nil
+            local closestDistance = math.huge
+
+            for _, npc in ipairs(npcs) do
+                if npc:FindFirstChild("Humanoid") and npc.Humanoid.Health > 0 then
+                    local distance = (npc.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+                    if distance < closestDistance then
+                        closestNPC = npc
+                        closestDistance = distance
+                    end
+                end
+            end
+
+            if closestNPC then
+                local npcPos = closestNPC.HumanoidRootPart.Position
+                tweenToPosition(npcPos)
+
+                print("Attacking NPC: " .. closestNPC.Name)
+                notifyUser("Attacking NPC: " .. closestNPC.Name)
+
+                wait(2)
+            else
+                wait(1)
+            end
+        end
+    end
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 400, 0, 300)
+    mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    mainFrame.Parent = gui
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0, 400, 0, 50)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Text = "Fruit Stealer"
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 24
+    title.Parent = mainFrame
+
+    local playerList = Instance.new("ScrollingFrame")
+    playerList.Size = UDim2.new(0, 380, 0, 120)
+    playerList.Position = UDim2.new(0, 10, 0, 60)
+    playerList.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+    playerList.BorderSizePixel = 1
+    playerList.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    playerList.CanvasSize = UDim2.new(0, 0, 0, 0)
+    playerList.ScrollBarThickness = 8
+    playerList.Parent = mainFrame
+
+    local farmButton = Instance.new("TextButton")
+    farmButton.Size = UDim2.new(0, 380, 0, 50)
+    farmButton.Position = UDim2.new(0, 10, 0, 200)
+    farmButton.Text = "Start Auto Farm"
+    farmButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    farmButton.BorderSizePixel = 1
+    farmButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    farmButton.Font = Enum.Font.SourceSans
+    farmButton.TextSize = 18
+    farmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    farmButton.Parent = mainFrame
+
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = playerList
+
+    for _, targetPlayer in ipairs(game.Players:GetPlayers()) do
+        if targetPlayer ~= player then
+            local playerButton = Instance.new("TextButton")
+            playerButton.Size = UDim2.new(0, 360, 0, 30)
+            playerButton.Text = targetPlayer.Name
+            playerButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+            playerButton.BorderSizePixel = 1
+            playerButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+            playerButton.Font = Enum.Font.SourceSans
+            playerButton.TextSize = 18
+            playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            playerButton.Parent = playerList
+
+            playerButton.MouseButton1Click:Connect(function()
+                stealFruit(targetPlayer)
+            end)
+
+            layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                playerList.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
+            end)
+        end
+    end
+
+    farmButton.MouseButton1Click:Connect(function()
+        coroutine.wrap(autoFarm)()
+    end)
+end
+
+FruitStealer:init()
