@@ -1,0 +1,167 @@
+local FruitSpawner = {}
+
+function FruitSpawner:init()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local gui = Instance.new("ScreenGui")
+    gui.Parent = player:WaitForChild("PlayerGui")
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 400, 0, 300)
+    mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    mainFrame.Parent = gui
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0, 400, 0, 50)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Text = "Fruit Spawner"
+    title.Font = Enum.Font.SourceSansBold
+    title.TextSize = 24
+    title.Parent = mainFrame
+
+    local fruitList = Instance.new("ScrollingFrame")
+    fruitList.Size = UDim2.new(0, 380, 0, 180)
+    fruitList.Position = UDim2.new(0, 10, 0, 60)
+    fruitList.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+    fruitList.BorderSizePixel = 1
+    fruitList.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    fruitList.CanvasSize = UDim2.new(0, 0, 0, 0)
+    fruitList.ScrollBarThickness = 8
+    fruitList.Parent = mainFrame
+
+    local spawnButton = Instance.new("TextButton")
+    spawnButton.Size = UDim2.new(0, 380, 0, 50)
+    spawnButton.Position = UDim2.new(0, 10, 0, 250)
+    spawnButton.Text = "Spawn Selected Fruit"
+    spawnButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    spawnButton.BorderSizePixel = 1
+    spawnButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    spawnButton.Font = Enum.Font.SourceSans
+    spawnButton.TextSize = 18
+    spawnButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    spawnButton.Parent = mainFrame
+
+    local layout = Instance.new("UIListLayout")
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 5)
+    layout.Parent = fruitList
+
+    local fruits = {
+        "Magma", "Ice", "Flame", "Dark", "Light", "Buddha", "Dragon", "Venom", "Phoenix", "Gravity", "Quake", 
+        "Spirit", "Snow", "Sand", "Smoke", "Bomb", "Electric", "Kitsune", "Rumble", "Control", "Love", 
+        "Dough", "Portal", "String", "Shadow", "Barrier"
+    }
+
+    local selectedFruit = nil
+
+    for _, fruitName in ipairs(fruits) do
+        local fruitButton = Instance.new("TextButton")
+        fruitButton.Size = UDim2.new(0, 360, 0, 30)
+        fruitButton.Text = fruitName
+        fruitButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+        fruitButton.BorderSizePixel = 1
+        fruitButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+        fruitButton.Font = Enum.Font.SourceSans
+        fruitButton.TextSize = 18
+        fruitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        fruitButton.Parent = fruitList
+
+        fruitButton.MouseButton1Click:Connect(function()
+            selectedFruit = fruitName
+            print("Selected fruit: " .. selectedFruit)
+        end)
+
+        layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            fruitList.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y)
+        end)
+    end
+
+    local function spawnFruit(fruitName, position)
+        local fruit = Instance.new("Part")
+        fruit.Name = fruitName
+        fruit.Size = Vector3.new(2, 2, 2)
+        fruit.Position = position
+        fruit.Anchored = true
+        fruit.Parent = workspace
+
+        local fruitColor = Instance.new("SpecialMesh", fruit)
+        fruitColor.MeshType = Enum.MeshType.Sphere
+        fruitColor.Scale = Vector3.new(1.5, 1.5, 1.5)
+        
+        if fruitName == "Magma" then
+            fruit.BrickColor = BrickColor.new("Bright red")
+        elseif fruitName == "Ice" then
+            fruit.BrickColor = BrickColor.new("Bright blue")
+        elseif fruitName == "Flame" then
+            fruit.BrickColor = BrickColor.new("Bright orange")
+        elseif fruitName == "Dark" then
+            fruit.BrickColor = BrickColor.new("Black")
+        elseif fruitName == "Light" then
+            fruit.BrickColor = BrickColor.new("White")
+        elseif fruitName == "Buddha" then
+            fruit.BrickColor = BrickColor.new("Bright yellow")
+        elseif fruitName == "Dragon" then
+            fruit.BrickColor = BrickColor.new("Bright green")
+        elseif fruitName == "Venom" then
+            fruit.BrickColor = BrickColor.new("Bright purple")
+        elseif fruitName == "Phoenix" then
+            fruit.BrickColor = BrickColor.new("Bright blue")
+        elseif fruitName == "Gravity" then
+            fruit.BrickColor = BrickColor.new("Bright violet")
+        elseif fruitName == "Quake" then
+            fruit.BrickColor = BrickColor.new("Bright cyan")
+        elseif fruitName == "Spirit" then
+            fruit.BrickColor = BrickColor.new("Bright white")
+        elseif fruitName == "Snow" then
+            fruit.BrickColor = BrickColor.new("Bright white")
+        elseif fruitName == "Sand" then
+            fruit.BrickColor = BrickColor.new("Bright yellow")
+        elseif fruitName == "Smoke" then
+            fruit.BrickColor = BrickColor.new("Bright grey")
+        elseif fruitName == "Bomb" then
+            fruit.BrickColor = BrickColor.new("Bright red")
+        elseif fruitName == "Electric" then
+            fruit.BrickColor = BrickColor.new("Bright yellow")
+        elseif fruitName == "Kitsune" then
+            fruit.BrickColor = BrickColor.new("Bright orange")
+        elseif fruitName == "Rumble" then
+            fruit.BrickColor = BrickColor.new("Bright blue")
+        elseif fruitName == "Control" then
+            fruit.BrickColor = BrickColor.new("Bright cyan")
+        elseif fruitName == "Love" then
+            fruit.BrickColor = BrickColor.new("Bright pink")
+        elseif fruitName == "Dough" then
+            fruit.BrickColor = BrickColor.new("Bright brown")
+        elseif fruitName == "Portal" then
+            fruit.BrickColor = BrickColor.new("Bright blue")
+        elseif fruitName == "String" then
+            fruit.BrickColor = BrickColor.new("Bright white")
+        elseif fruitName == "Shadow" then
+            fruit.BrickColor = BrickColor.new("Bright black")
+        elseif fruitName == "Barrier" then
+            fruit.BrickColor = BrickColor.new("Bright blue")
+        else
+            fruit.BrickColor = BrickColor.new("Bright green")
+        end
+        
+        return fruit
+    end
+
+    spawnButton.MouseButton1Click:Connect(function()
+        if selectedFruit then
+            local character = player.Character or player.CharacterAdded:Wait()
+            local spawnPosition = character.HumanoidRootPart.Position + (character.HumanoidRootPart.CFrame.LookVector * 5)
+            spawnFruit(selectedFruit, spawnPosition)
+            print("Spawned fruit: " .. selectedFruit .. " in front of the player")
+        else
+            print("No fruit selected.")
+        end
+    end)
+end
+
+FruitSpawner:init()
